@@ -8,11 +8,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @Getter
 public class BaseRepository<E> {
@@ -31,16 +33,27 @@ public class BaseRepository<E> {
             Class<R> responseClass,
             PageRequest pageable,
             BiFunction<CriteriaBuilder, Root<E>, Selection<R>> getSelection) {
+        return selectAsPage(responseClass, pageable, getSelection, null);
+    }
+
+    protected <R> Page<R> selectAsPage(
+            Class<R> responseClass,
+            PageRequest pageable,
+            BiFunction<CriteriaBuilder, Root<E>, Selection<R>> getSelection,
+            Function<Root<E>, List<Order>> getOrderBy) {
         return new Page<>(
                 getContent(responseClass, pageable, getSelection),
                 pageable.getPageSize(),
-                countParticipants());
+                countParticipants(),
+                getOrderBy);
     }
 
     private <R> List<R> getContent(
             Class<R> responseClass,
             PageRequest pageable,
-            BiFunction<CriteriaBuilder, Root<E>, Selection<R>> getSelection) {
+            BiFunction<CriteriaBuilder, Root<E>, Selection<R>> getSelection,
+            Function<Root<E>, List<Order>> getOrderBy) {
+
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<R> cq = criteriaBuilder.createQuery(responseClass);
         Root<E> from = cq.from(entityClass);
@@ -49,6 +62,11 @@ public class BaseRepository<E> {
         TypedQuery<R> q = entityManager.createQuery(cq)
                 .setFirstResult(pageable.getOffset())
                 .setMaxResults(pageable.getPageSize());
+
+        if(getOrderBy != null) {
+            cq.orderBy(getOrderBy.apply(from));
+        }
+
         return q.getResultList();
     }
 
