@@ -35,3 +35,6 @@ out/
 
 ### IDEA files ###
 .idea/
+
+### Generated files ###
+/src/generated
