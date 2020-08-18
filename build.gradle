@@ -28,7 +28,19 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	testCompile 'junit:junit'
+	testImplementation 'com.h2database:h2'
+    
+    // Metamodel generator for Criteria Api
 	annotationProcessor('org.hibernate:hibernate-jpamodelgen')
+
+    // Swagger
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+	
+	// Security
+	//implementation 'org.springframework.boot:spring-boot-starter-security'
+	//testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.withType(JavaCompile) {
