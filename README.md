@@ -1,5 +1,7 @@
 # test-for-carbonclick
 
+## Running Instructions
+
 ## Migrations
 
 To modify database schema you should add your Flyway migration into the directory

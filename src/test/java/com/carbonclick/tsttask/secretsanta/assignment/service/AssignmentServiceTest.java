@@ -1,7 +1,7 @@
 package com.carbonclick.tsttask.secretsanta.assignment.service;
 
 import com.carbonclick.tsttask.secretsanta.assignment.repository.dto.AssignmentDto;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,7 +14,7 @@ public class AssignmentServiceTest {
 
     private final AssignmentService assignmentService = new AssignmentService();
 
-    @Test
+    @Test(expected = RuntimeException.class)
     public void AssignmentTestOneParticipant() {
         List<AssignmentDto> assignments = assignmentService.assign(Collections.singleton(1L));
     }
