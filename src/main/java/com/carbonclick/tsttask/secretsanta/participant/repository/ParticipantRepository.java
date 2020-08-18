@@ -32,7 +32,7 @@ public class ParticipantRepository extends BaseRepository<ParticipantEntity> {
     }
 
     public Page<ParticipantResponse> list(PageRequest pageable) {
-        return getPage(
+        return selectAsPage(
                 ParticipantResponse.class,
                 pageable,
                 (cb, from) -> getCriteriaBuilder().construct(ParticipantResponse.class,

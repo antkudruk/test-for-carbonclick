@@ -27,7 +27,7 @@ public class BaseRepository<E> {
         this.criteriaBuilder = criteriaBuilder;
     }
 
-    public <R> Page<R> getPage(
+    protected <R> Page<R> selectAsPage(
             Class<R> responseClass,
             PageRequest pageable,
             BiFunction<CriteriaBuilder, Root<E>, Selection<R>> getSelection) {
