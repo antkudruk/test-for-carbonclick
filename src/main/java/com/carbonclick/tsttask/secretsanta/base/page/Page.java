@@ -1,4 +1,4 @@
-package com.carbonclick.tsttask.secretsanta.base;
+package com.carbonclick.tsttask.secretsanta.base.page;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
