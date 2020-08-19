@@ -2,13 +2,13 @@ package com.carbonclick.tsttask.secretsanta.base.page;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @ApiModel(description = "Default page request")
 public class PageRequest {
 
