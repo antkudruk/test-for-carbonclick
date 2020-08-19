@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Builder
 @Getter
@@ -20,5 +20,5 @@ public class NewAssignmentRequest {
     @ApiModelProperty("Title of the distribution (For instance, year number)")
     private String title;
     @ApiModelProperty("List of participant ids")
-    private List<Long> participants;
+    private Set<Long> participants;
 }

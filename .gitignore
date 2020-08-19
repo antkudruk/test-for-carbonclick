@@ -38,3 +38,6 @@ out/
 
 ### Generated files ###
 /src/generated
+
+### Don't commit log files ###
+*.log

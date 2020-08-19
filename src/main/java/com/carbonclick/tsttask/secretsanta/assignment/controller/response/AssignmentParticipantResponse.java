@@ -12,7 +12,7 @@ import lombok.Getter;
 @Getter
 @ApiModel(description = "Assignment Info")
 public class AssignmentParticipantResponse {
-    private final long id;
+    private final Long id;
     private final String firstName;
     private final String lastName;
 }

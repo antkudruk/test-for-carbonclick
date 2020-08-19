@@ -1,6 +1,5 @@
 package com.carbonclick.tsttask.secretsanta.assignment.repository;
 
-import com.carbonclick.tsttask.secretsanta.assignment.controller.response.AssignmentParticipantResponse;
 import com.carbonclick.tsttask.secretsanta.assignment.controller.response.AssignmentResponse;
 import com.carbonclick.tsttask.secretsanta.assignment.repository.dto.AssignmentDto;
 import com.carbonclick.tsttask.secretsanta.assignment.repository.entity.AssignmentEntity;
@@ -8,17 +7,14 @@ import com.carbonclick.tsttask.secretsanta.assignment.repository.entity.Assignme
 import com.carbonclick.tsttask.secretsanta.base.BaseRepository;
 import com.carbonclick.tsttask.secretsanta.base.page.Page;
 import com.carbonclick.tsttask.secretsanta.base.page.PageRequest;
-import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantResponse;
 import com.carbonclick.tsttask.secretsanta.participant.repository.entity.ParticipantEntity;
 import com.carbonclick.tsttask.secretsanta.participant.repository.entity.ParticipantEntity_;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 
 @Service
 public class AssignmentRepository extends BaseRepository<AssignmentEntity> {
@@ -26,47 +22,58 @@ public class AssignmentRepository extends BaseRepository<AssignmentEntity> {
         super(AssignmentEntity.class, entityManager, criteriaBuilder);
     }
 
-    public Page<AssignmentResponse> list(PageRequest pageable) {
+    public Page<AssignmentResponse> list(long yearId, PageRequest pageable) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<AssignmentResponse> cq = getCriteriaBuilder().createQuery(AssignmentResponse.class);
         Root<AssignmentEntity> from = cq.from(AssignmentEntity.class);
-        Join<AssignmentEntity, ParticipantEntity> takerParticipant
-                = from.join(AssignmentEntity_.TAKER);
-        Join<AssignmentEntity, ParticipantEntity> giverParticipant
+
+        Join<AssignmentEntity, ParticipantEntity> giverParticipantJoin
                 = from.join(AssignmentEntity_.GIVER);
+
+        Join<AssignmentEntity, ParticipantEntity> takerParticipantJoin
+                = from.join(AssignmentEntity_.TAKER);
 
         cq.select(cb.construct(AssignmentResponse.class,
                 from.get(AssignmentEntity_.ASSIGNMENT_ID),
-                cb.construct(AssignmentParticipantResponse.class,
-                        takerParticipant.get(ParticipantEntity_.PARTICIPANT_ID),
-                        takerParticipant.get(ParticipantEntity_.FIRST_NAME),
-                        takerParticipant.get(ParticipantEntity_.LAST_NAME)),
-                cb.construct(AssignmentParticipantResponse.class,
-                        giverParticipant.get(ParticipantEntity_.PARTICIPANT_ID),
-                        giverParticipant.get(ParticipantEntity_.FIRST_NAME),
-                        giverParticipant.get(ParticipantEntity_.LAST_NAME))
-                )
+
+                from.get(AssignmentEntity_.GIVER).get(ParticipantEntity_.PARTICIPANT_ID),
+                from.get(AssignmentEntity_.GIVER).get(ParticipantEntity_.FIRST_NAME),
+                from.get(AssignmentEntity_.GIVER).get(ParticipantEntity_.LAST_NAME),
+
+                from.get(AssignmentEntity_.TAKER).get(ParticipantEntity_.PARTICIPANT_ID),
+                from.get(AssignmentEntity_.TAKER).get(ParticipantEntity_.FIRST_NAME),
+                from.get(AssignmentEntity_.TAKER).get(ParticipantEntity_.LAST_NAME))
         );
 
-        cq.orderBy(cb.asc(cb.concat(
-                takerParticipant.get(ParticipantEntity_.FIRST_NAME),
-                takerParticipant.get(ParticipantEntity_.LAST_NAME))));
+        cq.where(cb.equal(from.get(AssignmentEntity_.YEAR_ID), yearId));
 
-        TypedQuery<AssignmentResponse> q = getEntityManager().createQuery(cq)
+        cq.orderBy(cb.asc(cb.concat(
+                ((Join)takerParticipantJoin).get(ParticipantEntity_.FIRST_NAME),
+                ((Join)takerParticipantJoin).get(ParticipantEntity_.LAST_NAME))));
+
+        TypedQuery<AssignmentResponse> q = getEntityManager()
+                .createQuery(cq)
                 .setFirstResult(pageable.getOffset())
                 .setMaxResults(pageable.getPageSize());
 
         return new Page<>(
                 q.getResultList(),
                 pageable.getPageSize(),
-                countParticipants());
+                count());
     }
 
+    @Transactional
     public AssignmentDto saveAssignment(AssignmentDto assignmentDto) {
         AssignmentEntity assignmentEntity = AssignmentEntity.builder()
-
+                .giverId(assignmentDto.getGiverId())
+                .takerId(assignmentDto.getTakerId())
                 .build();
 
-        getEntityManager().
+        getEntityManager().persist(assignmentEntity);
+
+        return AssignmentDto.builder()
+                .giverId(assignmentEntity.giverId())
+                .takerId(assignmentEntity.takerId())
+                .build();
     }
 }

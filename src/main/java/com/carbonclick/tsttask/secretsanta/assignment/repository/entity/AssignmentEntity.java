@@ -7,14 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 @Data
 @Builder
@@ -25,17 +18,26 @@ import javax.persistence.OneToMany;
 public class AssignmentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long assignment_id;
+    private Long assignmentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "year_id")
     private YearEntity year;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "giver_id")
-    private ParticipantEntity giver;
+    @Column(name = "year_id", insertable=false, updatable=false)
+    private Long yearId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "taker_id")
+    @JoinColumn(name = "giver_id", insertable=false, updatable=false)
+    private ParticipantEntity giver;
+
+    @Column(name = "giver_id")
+    private Long giverId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "taker_id", insertable=false, updatable=false)
     private ParticipantEntity taker;
+
+    @Column(name = "taker_id")
+    private Long takerId;
 }

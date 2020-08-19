@@ -14,7 +14,6 @@ import javax.persistence.criteria.Selection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 @Getter
 public class BaseRepository<E> {
@@ -40,19 +39,18 @@ public class BaseRepository<E> {
             Class<R> responseClass,
             PageRequest pageable,
             BiFunction<CriteriaBuilder, Root<E>, Selection<R>> getSelection,
-            Function<Root<E>, List<Order>> getOrderBy) {
+            BiFunction<CriteriaBuilder, Root<E>, List<Order>> getOrderBy) {
         return new Page<>(
-                getContent(responseClass, pageable, getSelection),
+                getContent(responseClass, pageable, getSelection, getOrderBy),
                 pageable.getPageSize(),
-                countParticipants(),
-                getOrderBy);
+                count());
     }
 
     private <R> List<R> getContent(
             Class<R> responseClass,
             PageRequest pageable,
             BiFunction<CriteriaBuilder, Root<E>, Selection<R>> getSelection,
-            Function<Root<E>, List<Order>> getOrderBy) {
+            BiFunction<CriteriaBuilder, Root<E>, List<Order>> getOrderBy) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<R> cq = criteriaBuilder.createQuery(responseClass);
@@ -64,13 +62,13 @@ public class BaseRepository<E> {
                 .setMaxResults(pageable.getPageSize());
 
         if(getOrderBy != null) {
-            cq.orderBy(getOrderBy.apply(from));
+            cq.orderBy(getOrderBy.apply(cb, from));
         }
 
         return q.getResultList();
     }
 
-    private int countParticipants( ) {
+    public int count( ) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);

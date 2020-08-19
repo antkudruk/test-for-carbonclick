@@ -6,12 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +20,18 @@ import java.util.List;
 public class YearEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long year_id;
+    private Long yearId;
     private String title;
     @Builder.Default
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "year")
     private List<AssignmentEntity> assignments = new ArrayList<>();
     private Instant createdAt;
+
+    public YearEntity assignments(List<AssignmentEntity> assignments) {
+        this.assignments.clear();
+        this.assignments.addAll(assignments);
+        this.assignments.forEach(t -> t.year(this));
+        return this;
+    }
 }
