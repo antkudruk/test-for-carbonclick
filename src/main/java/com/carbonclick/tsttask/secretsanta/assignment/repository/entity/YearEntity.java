@@ -19,7 +19,7 @@ import java.util.List;
 @Entity
 public class YearEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long yearId;
     private String title;
     @Builder.Default

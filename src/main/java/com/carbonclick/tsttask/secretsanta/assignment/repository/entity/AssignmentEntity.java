@@ -17,7 +17,7 @@ import javax.persistence.*;
 @Entity
 public class AssignmentEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long assignmentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
