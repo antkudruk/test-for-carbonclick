@@ -32,9 +32,12 @@ public class NamingStrategy implements PhysicalNamingStrategy {
     public Identifier toPhysicalTableName(final Identifier identifier, final JdbcEnvironment jdbcEnv) {
         Pattern pattern = Pattern.compile("^(?<unwrapped>.+)Entity$");
         Matcher matcher = pattern.matcher(identifier.getText());
-        matcher.find();
-        String unwrapped = matcher.group("unwrapped");
-        return convertToSnakeCase(unwrapped);
+        if (matcher.find()) {
+            String unwrapped = matcher.group("unwrapped");
+            return convertToSnakeCase(unwrapped);
+        } else {
+            return identifier;
+        }
     }
 
     private Identifier convertToSnakeCase(final Identifier identifier) {

@@ -9,6 +9,10 @@ spring:
       ddl-auto: none
       naming:
         physical-strategy: com.carbonclick.tsttask.secretsanta.util.NamingStrategy
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
   h2:
     console:
       enabled: true
@@ -16,3 +20,12 @@ spring:
     baseline-on-migrate: false
 server:
   port: 8081
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
