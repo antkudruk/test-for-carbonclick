@@ -1,7 +1,7 @@
 package com.carbonclick.tsttask.secretsanta.participant.controller;
 
-import com.carbonclick.tsttask.secretsanta.base.Page;
-import com.carbonclick.tsttask.secretsanta.base.PageRequest;
+import com.carbonclick.tsttask.secretsanta.base.page.Page;
+import com.carbonclick.tsttask.secretsanta.base.page.PageRequest;
 import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantRequest;
 import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantResponse;
 import com.carbonclick.tsttask.secretsanta.participant.repository.ParticipantRepository;

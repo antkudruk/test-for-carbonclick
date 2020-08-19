@@ -1,5 +1,26 @@
 # test-for-carbonclick
 
+## Running instructions
+
+* Set up My Sql Database Service
+* Create new database called `secretsanta`.
+
+    `create database secretsanta;`
+* Set up your credentials in src\main\resources\application.yml in the following fields
+    ```$xslt
+    spring:
+      datasource:
+        username: 
+        password: 
+    ```
+* Run the application via gradle
+    * To clean up your build run the command
+        `gradlew.bat clean`
+    * To build the project run the command
+        `gradlew.bat build`
+    * To run the project run
+        `gradlew.bat bootRun`        
+        
 ## Migrations
 
 To modify database schema you should add your Flyway migration into the directory
