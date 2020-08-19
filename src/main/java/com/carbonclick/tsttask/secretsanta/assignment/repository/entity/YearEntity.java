@@ -19,19 +19,13 @@ import java.util.List;
 @Entity
 public class YearEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long yearId;
     private String title;
     @Builder.Default
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "year")
+    @OneToMany(mappedBy = "year", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AssignmentEntity> assignments = new ArrayList<>();
-    private Instant createdAt;
 
-    public YearEntity assignments(List<AssignmentEntity> assignments) {
-        this.assignments.clear();
-        this.assignments.addAll(assignments);
-        this.assignments.forEach(t -> t.year(this));
-        return this;
-    }
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Instant createdAt;
 }

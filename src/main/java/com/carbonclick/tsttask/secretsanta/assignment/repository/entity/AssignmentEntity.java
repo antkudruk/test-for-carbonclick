@@ -17,14 +17,14 @@ import javax.persistence.*;
 @Entity
 public class AssignmentEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long assignmentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "year_id")
+    @JoinColumn(name = "year_id", insertable=false, updatable=false)
     private YearEntity year;
 
-    @Column(name = "year_id", insertable=false, updatable=false)
+    @Column(name = "year_id")
     private Long yearId;
 
     @ManyToOne(fetch = FetchType.LAZY)

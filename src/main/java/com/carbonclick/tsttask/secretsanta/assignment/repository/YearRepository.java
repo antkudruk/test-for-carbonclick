@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,20 +31,21 @@ public class YearRepository extends BaseRepository<YearEntity> {
     @Transactional
     public YearResponse create(YearDto yearDto) {
 
-        List<AssignmentEntity> newAssignments = yearDto.getAssignments().stream()
-                .map(t -> AssignmentEntity.builder()
-                        .giverId(t.getGiverId())
-                        .takerId(t.getTakerId())
-                        .build())
-                .collect(Collectors.toList());
-
         YearEntity newYear = YearEntity.builder()
                 .title(yearDto.getTitle())
-                .assignments(newAssignments)
                 .build();
 
         getEntityManager().persist(newYear);
-        getEntityManager().flush();
+
+        newYear.assignments(yearDto.getAssignments().stream()
+                .map(t -> AssignmentEntity.builder()
+                        .yearId(newYear.yearId())
+                        .giverId(t.getGiverId())
+                        .takerId(t.getTakerId())
+                        .build())
+                .collect(Collectors.toList()));
+
+        getEntityManager().persist(newYear);
 
         return YearResponse.builder()
                 .id(newYear.yearId())
