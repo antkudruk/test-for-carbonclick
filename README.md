@@ -1,4 +1,4 @@
-# test-for-carbonclick
+# Secret Santa Backend (Test Task)
 
 ## Migrations
 
