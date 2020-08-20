@@ -39,8 +39,11 @@ dependencies {
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 	
 	// Security
-	//implementation 'org.springframework.boot:spring-boot-starter-security'
-	//testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.2'
 }
 
 tasks.withType(JavaCompile) {

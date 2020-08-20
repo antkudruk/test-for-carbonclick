@@ -1,6 +1,6 @@
 package com.carbonclick.tsttask.secretsanta.participant;
 
-import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantRequest;
+import com.carbonclick.tsttask.secretsanta.participant.controller.request.ParticipantRequest;
 import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantResponse;
 import com.carbonclick.tsttask.secretsanta.participant.repository.ParticipantRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,6 +1,6 @@
 package com.carbonclick.tsttask.secretsanta.participant.mapper;
 
-import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantRequest;
+import com.carbonclick.tsttask.secretsanta.participant.controller.request.ParticipantRequest;
 import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantResponse;
 import com.carbonclick.tsttask.secretsanta.participant.repository.entity.ParticipantEntity;
 import org.springframework.stereotype.Service;

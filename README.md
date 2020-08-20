@@ -20,7 +20,12 @@
         `gradlew.bat build`
     * To run the project run
         `gradlew.bat bootRun`        
-        
+
+## Default credentials
+
+Username: `admin`
+Password: `123456`
+
 ## Migrations
 
 To modify database schema you should add your Flyway migration into the directory
