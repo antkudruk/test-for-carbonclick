@@ -7,7 +7,7 @@ import com.carbonclick.tsttask.secretsanta.assignment.repository.AssignmentRepos
 import com.carbonclick.tsttask.secretsanta.assignment.repository.YearRepository;
 import com.carbonclick.tsttask.secretsanta.base.page.Page;
 import com.carbonclick.tsttask.secretsanta.base.page.PageRequest;
-import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantRequest;
+import com.carbonclick.tsttask.secretsanta.participant.controller.request.ParticipantRequest;
 import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantResponse;
 import com.carbonclick.tsttask.secretsanta.participant.repository.ParticipantRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,7 +86,6 @@ public class YearControllerTest {
 
         YearResponseTest newYear = objectMapper.readValue(result, YearResponseTest.class);
 
-        // TODO: Check year repo
         Page<YearResponse> page = yearRepository.list(new PageRequest(0, 10));
         assert page.getContent().get(0).getTitle().equals("Year 2020");
 
@@ -99,7 +98,7 @@ public class YearControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty());
 
         mvc.perform( MockMvcRequestBuilders
-                .get("/year/" + newYear.getId())   // TODO: Get the number
+                .get("/year/" + newYear.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -109,7 +108,7 @@ public class YearControllerTest {
                 .getContentAsString();
 
         String resultAssignmentsString = mvc.perform( MockMvcRequestBuilders
-                .get("/year/" + newYear.getId() + "/assignment")   // TODO: Get the number
+                .get("/year/" + newYear.getId() + "/assignment")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
