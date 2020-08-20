@@ -27,5 +27,6 @@ public class YearEntity {
     private List<AssignmentEntity> assignments = new ArrayList<>();
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Instant createdAt;
+    @Builder.Default
+    private Instant createdAt = Instant.now();
 }

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.util.Optional;
 
 @Service
 public class AssignmentRepository extends BaseRepository<AssignmentEntity> {
@@ -59,7 +60,21 @@ public class AssignmentRepository extends BaseRepository<AssignmentEntity> {
         return new Page<>(
                 q.getResultList(),
                 pageable.getPageSize(),
-                count());
+                countAssignments(yearId));
+    }
+
+    private int countAssignments(long yearId) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<AssignmentEntity> from = cq.from(AssignmentEntity.class);
+        cq.select(cb.count(from));
+
+        cq.where(cb.equal(from.get(AssignmentEntity_.YEAR_ID), yearId));
+
+        TypedQuery<Long> q = getEntityManager()
+                .createQuery(cq);
+
+        return Optional.ofNullable(q.getSingleResult()).orElse(0L).intValue();
     }
 
     @Transactional

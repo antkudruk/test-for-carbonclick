@@ -10,13 +10,11 @@ import java.util.List;
 public class Page<D> {
     private final List<D> content;
     private final int pageSize;
-    private final int pageNumber;
     private final int total;
 
     public Page(List<D> content, int pageSize, int total) {
         this.content = content;
         this.pageSize = pageSize;
-        this.pageNumber = total / pageSize + 1;
         this.total = total;
     }
 }
