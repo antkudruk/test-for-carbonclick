@@ -6,6 +6,7 @@ import com.carbonclick.tsttask.secretsanta.user.service.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/login")
 @RequiredArgsConstructor
+@Validated
 public class LoginController {
 
     private final AuthenticationManager authenticationManager;
