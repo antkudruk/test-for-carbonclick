@@ -9,11 +9,15 @@ import com.carbonclick.tsttask.secretsanta.assignment.service.AssignmentService;
 import com.carbonclick.tsttask.secretsanta.base.page.Page;
 import com.carbonclick.tsttask.secretsanta.base.page.PageRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/year")
 @RequiredArgsConstructor
+@Validated
 public class YearController {
 
     private final AssignmentService assignmentService;
@@ -22,7 +26,7 @@ public class YearController {
 
     @PostMapping("/generate")
     @ResponseBody
-    public YearResponse generate(@RequestBody NewAssignmentRequest request) {
+    public YearResponse generate(@Valid @RequestBody NewAssignmentRequest request) {
         return assignmentService.assign(request);
     }
 

@@ -6,11 +6,15 @@ import com.carbonclick.tsttask.secretsanta.participant.controller.request.Partic
 import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantResponse;
 import com.carbonclick.tsttask.secretsanta.participant.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/participant")
 @RequiredArgsConstructor
+@Validated
 public class ParticipantController {
 
     private final ParticipantRepository participantRepository;
@@ -27,13 +31,13 @@ public class ParticipantController {
 
     @PostMapping
     @ResponseBody
-    public ParticipantResponse save(@RequestBody ParticipantRequest request) {
+    public ParticipantResponse save(@Valid @RequestBody ParticipantRequest request) {
         return participantRepository.save(request);
     }
 
     @PutMapping("/{id:\\d+}")
     @ResponseBody
-    public ParticipantResponse update(@PathVariable("id") long id, @RequestBody ParticipantRequest request) {
+    public ParticipantResponse update(@PathVariable("id") long id, @Valid @RequestBody ParticipantRequest request) {
         return participantRepository.update(id, request);
     }
 }

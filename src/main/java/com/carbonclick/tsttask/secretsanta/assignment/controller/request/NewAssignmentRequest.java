@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Set;
 
 @Builder
@@ -18,7 +20,9 @@ import java.util.Set;
 @ApiModel(description = "Request to create and run new Secret Santa distribution")
 public class NewAssignmentRequest {
     @ApiModelProperty("Title of the distribution (For instance, year number)")
+    @NotBlank(message = "Year title should be specified")
     private String title;
     @ApiModelProperty("List of participant ids")
+    @Size(min = 2)
     private Set<Long> participants;
 }
