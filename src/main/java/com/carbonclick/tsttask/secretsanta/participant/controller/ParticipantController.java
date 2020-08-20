@@ -2,7 +2,7 @@ package com.carbonclick.tsttask.secretsanta.participant.controller;
 
 import com.carbonclick.tsttask.secretsanta.base.page.Page;
 import com.carbonclick.tsttask.secretsanta.base.page.PageRequest;
-import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantRequest;
+import com.carbonclick.tsttask.secretsanta.participant.controller.request.ParticipantRequest;
 import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantResponse;
 import com.carbonclick.tsttask.secretsanta.participant.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,14 +28,12 @@ public class ParticipantController {
     @PostMapping
     @ResponseBody
     public ParticipantResponse save(@RequestBody ParticipantRequest request) {
-        ParticipantResponse resp = participantRepository.save(request);
-        return resp;
+        return participantRepository.save(request);
     }
 
     @PutMapping("/{id:\\d+}")
     @ResponseBody
     public ParticipantResponse update(@PathVariable("id") long id, @RequestBody ParticipantRequest request) {
-        ParticipantResponse resp = participantRepository.update(id, request);
-        return resp;
+        return participantRepository.update(id, request);
     }
 }

@@ -1,4 +1,4 @@
-package com.carbonclick.tsttask.secretsanta.participant.controller.response;
+package com.carbonclick.tsttask.secretsanta.participant.controller.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
