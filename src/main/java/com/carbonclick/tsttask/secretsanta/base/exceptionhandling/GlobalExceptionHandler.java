@@ -44,7 +44,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .stream()
                 .map(e -> (FieldError)e)
                 .map(e -> FieldViolationResponse.builder()
-                        .message(e.getDefaultMessage())// TODO: Is really DEFAULT message?
+                        .message(e.getDefaultMessage())
                         .objectName(e.getObjectName())
                         .fieldName(e.getField())
                         .build())
