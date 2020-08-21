@@ -1,6 +1,6 @@
 package com.carbonclick.tsttask.secretsanta.participant.repository;
 
-import com.carbonclick.tsttask.secretsanta.assignment.repository.QueryService;
+import com.carbonclick.tsttask.secretsanta.base.QueryService;
 import com.carbonclick.tsttask.secretsanta.base.page.Page;
 import com.carbonclick.tsttask.secretsanta.base.page.PageRequest;
 import com.carbonclick.tsttask.secretsanta.participant.controller.request.ParticipantRequest;

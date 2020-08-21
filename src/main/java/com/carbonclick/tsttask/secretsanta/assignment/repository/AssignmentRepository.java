@@ -3,6 +3,7 @@ package com.carbonclick.tsttask.secretsanta.assignment.repository;
 import com.carbonclick.tsttask.secretsanta.assignment.controller.response.AssignmentResponse;
 import com.carbonclick.tsttask.secretsanta.assignment.repository.entity.AssignmentEntity;
 import com.carbonclick.tsttask.secretsanta.assignment.repository.entity.AssignmentEntity_;
+import com.carbonclick.tsttask.secretsanta.base.QueryService;
 import com.carbonclick.tsttask.secretsanta.base.page.Page;
 import com.carbonclick.tsttask.secretsanta.base.page.PageRequest;
 import com.carbonclick.tsttask.secretsanta.participant.repository.entity.ParticipantEntity_;
