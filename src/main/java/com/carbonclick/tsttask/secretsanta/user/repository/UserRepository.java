@@ -1,6 +1,6 @@
 package com.carbonclick.tsttask.secretsanta.user.repository;
 
-import com.carbonclick.tsttask.secretsanta.assignment.repository.QueryService;
+import com.carbonclick.tsttask.secretsanta.base.QueryService;
 import com.carbonclick.tsttask.secretsanta.user.repository.dto.UserDto;
 import com.carbonclick.tsttask.secretsanta.user.repository.entity.UserEntity;
 import com.carbonclick.tsttask.secretsanta.user.repository.entity.UserEntity_;

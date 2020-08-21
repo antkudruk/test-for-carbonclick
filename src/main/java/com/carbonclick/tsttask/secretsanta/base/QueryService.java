@@ -1,4 +1,4 @@
-package com.carbonclick.tsttask.secretsanta.assignment.repository;
+package com.carbonclick.tsttask.secretsanta.base;
 
 import com.carbonclick.tsttask.secretsanta.base.page.Page;
 import com.carbonclick.tsttask.secretsanta.base.page.PageRequest;
