@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: 'jdbc:mysql://localhost/secretsanta?useSSL=false&useUnicode=yes&characterEncoding=UTF-8'
-    username: root
-    password: 9|e6yryc9|
+    username:
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:

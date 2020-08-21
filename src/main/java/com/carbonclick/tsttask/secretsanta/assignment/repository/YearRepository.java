@@ -5,28 +5,23 @@ import com.carbonclick.tsttask.secretsanta.assignment.repository.dto.YearDto;
 import com.carbonclick.tsttask.secretsanta.assignment.repository.entity.AssignmentEntity;
 import com.carbonclick.tsttask.secretsanta.assignment.repository.entity.YearEntity;
 import com.carbonclick.tsttask.secretsanta.assignment.repository.entity.YearEntity_;
-import com.carbonclick.tsttask.secretsanta.base.BaseRepository;
 import com.carbonclick.tsttask.secretsanta.base.page.Page;
 import com.carbonclick.tsttask.secretsanta.base.page.PageRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.*;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Service
-public class YearRepository extends BaseRepository<YearEntity> {
+@RequiredArgsConstructor
+public class YearRepository {
 
+    private final EntityManager entityManager;
     private final AssignmentMapper assignmentMapper;
-
-    public YearRepository(EntityManager entityManager,
-                          CriteriaBuilder criteriaBuilder,
-                          AssignmentMapper assignmentMapper) {
-        super(YearEntity.class, entityManager, criteriaBuilder);
-        this.assignmentMapper = assignmentMapper;
-    }
+    private final QueryService queryService;
 
     @Transactional
     public YearResponse create(YearDto yearDto) {
@@ -35,7 +30,7 @@ public class YearRepository extends BaseRepository<YearEntity> {
                 .title(yearDto.getTitle())
                 .build();
 
-        getEntityManager().persist(newYear);
+        entityManager.persist(newYear);
 
         newYear.assignments(yearDto.getAssignments().stream()
                 .map(t -> AssignmentEntity.builder()
@@ -45,7 +40,7 @@ public class YearRepository extends BaseRepository<YearEntity> {
                         .build())
                 .collect(Collectors.toList()));
 
-        getEntityManager().persist(newYear);
+        entityManager.persist(newYear);
 
         return YearResponse.builder()
                 .id(newYear.yearId())
@@ -54,18 +49,17 @@ public class YearRepository extends BaseRepository<YearEntity> {
     }
 
     public Page<YearResponse> list(PageRequest pageable) {
-        return selectAsPage(
-                YearResponse.class,
-                pageable,
-                (cb, from) -> getCriteriaBuilder().construct(YearResponse.class,
+        return queryService.pageQueryBuilder(YearEntity.class, YearResponse.class)
+                .select((cb, from) -> cb.construct(YearResponse.class,
                         from.get(YearEntity_.YEAR_ID),
-                        from.get(YearEntity_.TITLE)),
-                (cb, from) -> Collections.singletonList(cb.desc(from.get(YearEntity_.CREATED_AT)))
-        );
+                        from.get(YearEntity_.TITLE))
+                )
+                .orderBy((cb, from) -> Collections.singletonList(cb.desc(from.get(YearEntity_.CREATED_AT))))
+                .build().getPage(pageable);
     }
 
     public YearResponse get(Long id) {
-        YearEntity year = getEntityManager().getReference(YearEntity.class, id);
+        YearEntity year = entityManager.getReference(YearEntity.class, id);
         return assignmentMapper.mapYearToResponse(year);
     }
 }
