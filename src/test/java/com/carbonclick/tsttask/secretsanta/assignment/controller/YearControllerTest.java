@@ -10,8 +10,11 @@ import com.carbonclick.tsttask.secretsanta.base.page.PageRequest;
 import com.carbonclick.tsttask.secretsanta.participant.controller.request.ParticipantRequest;
 import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantResponse;
 import com.carbonclick.tsttask.secretsanta.participant.repository.ParticipantRepository;
+import com.carbonclick.tsttask.secretsanta.user.controller.request.LoginRequest;
+import com.carbonclick.tsttask.secretsanta.user.repository.entity.UserEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,6 +27,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,12 +53,47 @@ public class YearControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private EntityManager entityManager;
 
     @Autowired
     private YearRepository yearRepository;
 
     @Autowired
     private AssignmentRepository assignmentRepository;
+
+    private String authToken;
+
+    public static class TestLoginResponse {
+        public String token;
+    }
+
+    @BeforeEach
+    public void initJwtToken() throws Exception {
+        UserEntity user = UserEntity.builder()
+                .username("admin")
+                .password("$2a$10$aDipcD0hx5janQqNYMqKBe.fBx6TSY8Kvyu4zfyQ0oU4/qs4TK/1O")   // 123456
+                .build();
+
+        entityManager.persist(user);
+
+        LoginRequest req = new LoginRequest("admin", "123456");
+
+        String response = mvc.perform( MockMvcRequestBuilders
+                .post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+                .content(objectMapper.writeValueAsString(req))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        authToken = objectMapper.readValue(response, TestLoginResponse.class).token;
+    }
 
     @Test
     @Transactional
@@ -75,6 +115,7 @@ public class YearControllerTest {
 
         String result = mvc.perform( MockMvcRequestBuilders
                 .post("/year/generate")
+                .header("Authorization", "Bearer " + authToken)
                 .content(body)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -91,6 +132,7 @@ public class YearControllerTest {
 
         mvc.perform( MockMvcRequestBuilders
                 .get("/year")
+                .header("Authorization", "Bearer " + authToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -99,6 +141,7 @@ public class YearControllerTest {
 
         mvc.perform( MockMvcRequestBuilders
                 .get("/year/" + newYear.getId())
+                .header("Authorization", "Bearer " + authToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -109,6 +152,7 @@ public class YearControllerTest {
 
         String resultAssignmentsString = mvc.perform( MockMvcRequestBuilders
                 .get("/year/" + newYear.getId() + "/assignment")
+                .header("Authorization", "Bearer " + authToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -117,10 +161,15 @@ public class YearControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        TestPageResponse<AssignmentResponse> resultAssignments = objectMapper.readValue(resultAssignmentsString, TestPageResponse.class);
-        assertTrue(resultAssignments.getContent().stream().allMatch(a -> a.getTaker().getId() != a.getGiver().getId()));
-        assertTrue(allElementsDistinct(resultAssignments.getContent().stream().map(a -> a.getGiver().getId()).collect(Collectors.toList())));
-        assertTrue(allElementsDistinct(resultAssignments.getContent().stream().map(a -> a.getTaker().getId()).collect(Collectors.toList())));
+        List<AssignmentResponse> resultAssignments = (List<AssignmentResponse>)objectMapper.readValue(resultAssignmentsString, TestPageResponse.class)
+                .getContent()
+                .stream()
+                .map(map -> objectMapper.convertValue(map, AssignmentResponse.class))
+                .collect(Collectors.toList());
+
+        resultAssignments.stream().allMatch(a -> a.getTaker().getId() != a.getGiver().getId());
+        assertTrue(allElementsDistinct(resultAssignments.stream().map(a -> a.getGiver().getId()).collect(Collectors.toList())));
+        assertTrue(allElementsDistinct(resultAssignments.stream().map(a -> a.getTaker().getId()).collect(Collectors.toList())));
     }
 
     private <T> boolean allElementsDistinct(List<T> elements) {
