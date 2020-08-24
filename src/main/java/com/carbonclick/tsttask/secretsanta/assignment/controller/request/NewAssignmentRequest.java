@@ -26,6 +26,6 @@ public class NewAssignmentRequest {
     @NotBlank(message = "Year title should be specified")
     private String title;
     @ApiModelProperty("List of participant ids")
-    @Size(min = 2)
+    @Size(min = 2, message = "Participants list should contain at least two participants")
     private Set<Long> participants;
 }

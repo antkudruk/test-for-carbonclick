@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 public class ParticipantRepositoryTest {
 
     private final int PAGE_SIZE = 3;

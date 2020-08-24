@@ -1,27 +1,20 @@
 package com.carbonclick.tsttask.secretsanta.participant;
 
+import com.carbonclick.tsttask.secretsanta.BaseTest;
 import com.carbonclick.tsttask.secretsanta.base.exceptionhandling.response.ErrorResponse;
 import com.carbonclick.tsttask.secretsanta.participant.controller.request.ParticipantRequest;
 import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantResponse;
 import com.carbonclick.tsttask.secretsanta.participant.repository.ParticipantRepository;
 import com.carbonclick.tsttask.secretsanta.user.controller.request.LoginRequest;
 import com.carbonclick.tsttask.secretsanta.user.repository.entity.UserEntity;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,32 +22,14 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-public class ParticipantTest {
+public class ParticipantTest extends BaseTest {
 
     private static final String FIRST_NAME = "John";
     private static final String LAST_NAME = "Smith";
     private static final String EMAIL = "user@host.dmn";
 
     @Autowired
-    private MockMvc mvc;
-
-    @Autowired
     private ParticipantRepository participantRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private EntityManager entityManager;
-
-    private String authToken;
-
-    public static class TestLoginResponse {
-        public String token;
-    }
 
     @BeforeEach
     public void initJwtToken() throws Exception {
