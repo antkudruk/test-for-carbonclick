@@ -14,7 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CompoundSelection;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Root;
 import java.util.Arrays;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 @Service
 @RequiredArgsConstructor
@@ -24,18 +29,37 @@ public class ParticipantRepository {
     private final EntityManager entityManager;
     private final QueryService queryService;
 
-    public Page<ParticipantResponse> list(PageRequest pageable) {
+    private static final BiFunction<CriteriaBuilder, Root<ParticipantEntity>, CompoundSelection<ParticipantResponse>>
+        SELECT_PARTICIPANT = (cb, from) -> cb.construct(ParticipantResponse.class,
+            from.get(ParticipantEntity_.PARTICIPANT_ID),
+            from.get(ParticipantEntity_.FIRST_NAME),
+            from.get(ParticipantEntity_.LAST_NAME),
+            from.get(ParticipantEntity_.EMAIL));
+
+    public Page<ParticipantResponse> page(PageRequest pageable) {
         return queryService.pageQueryBuilder(ParticipantEntity.class, ParticipantResponse.class)
-                .select((cb, from) -> cb.construct(ParticipantResponse.class,
-                        from.get(ParticipantEntity_.PARTICIPANT_ID),
-                        from.get(ParticipantEntity_.FIRST_NAME),
-                        from.get(ParticipantEntity_.LAST_NAME),
-                        from.get(ParticipantEntity_.EMAIL)))
+                .select(SELECT_PARTICIPANT)
                 .orderBy((cb, from) -> Arrays.asList(
                         cb.asc(from.get(ParticipantEntity_.FIRST_NAME)),
                         cb.asc(from.get(ParticipantEntity_.LAST_NAME))
                 ))
                 .build().getPage(pageable);
+    }
+
+    public Optional<ParticipantResponse> findByFirstLast(String first, String last) {
+        return queryService.querybuilder(ParticipantEntity.class, ParticipantResponse.class)
+                .select(SELECT_PARTICIPANT)
+                .where((cb, from) -> cb.and(
+                        cb.equal(from.get(ParticipantEntity_.FIRST_NAME), first),
+                        cb.equal(from.get(ParticipantEntity_.LAST_NAME), last)))
+                .findSingleResult();
+    }
+
+    public Optional<ParticipantResponse> findByEmail(String email) {
+        return queryService.querybuilder(ParticipantEntity.class, ParticipantResponse.class)
+                .select(SELECT_PARTICIPANT)
+                .where((cb, from) -> cb.and(cb.equal(from.get(ParticipantEntity_.EMAIL), email)))
+                .findSingleResult();
     }
 
     @Transactional

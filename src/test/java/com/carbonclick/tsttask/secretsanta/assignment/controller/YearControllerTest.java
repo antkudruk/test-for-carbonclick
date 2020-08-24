@@ -125,7 +125,7 @@ public class YearControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        YearResponseTest newYear = objectMapper.readValue(result, YearResponseTest.class);
+        TestYearResponse newYear = objectMapper.readValue(result, TestYearResponse.class);
 
         Page<YearResponse> page = yearRepository.list(new PageRequest(0, 10));
         assert page.getContent().get(0).getTitle().equals("Year 2020");

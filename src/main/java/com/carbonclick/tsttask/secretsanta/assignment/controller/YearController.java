@@ -42,6 +42,6 @@ public class YearController {
 
     @GetMapping("/{id:\\d+}/assignment")
     public Page<AssignmentResponse> assignments(@PathVariable Long id, PageRequest pageRequest) {
-        return assignmentRepository.list(id, pageRequest);
+        return assignmentRepository.page(id, pageRequest);
     }
 }

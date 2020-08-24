@@ -21,7 +21,7 @@ public class ParticipantController {
 
     @GetMapping
     public Page<ParticipantResponse> list(PageRequest pageable) {
-        return participantRepository.list(pageable);
+        return participantRepository.page(pageable);
     }
 
     @GetMapping("/{id:\\d+}")
