@@ -1,11 +1,8 @@
 package com.carbonclick.tsttask.secretsanta.user;
 
 import com.carbonclick.tsttask.secretsanta.user.controller.request.LoginRequest;
-import com.carbonclick.tsttask.secretsanta.user.repository.UserRepository;
 import com.carbonclick.tsttask.secretsanta.user.repository.entity.UserEntity;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +13,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
 
@@ -41,15 +35,6 @@ public class UserTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    //@Before
-    //public void setupUser() {
-        //Init MockMvc Object and build
-    //    mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    //}
-
     @Test
     @Transactional
     @Rollback
@@ -64,7 +49,7 @@ public class UserTest {
 
         LoginRequest req = new LoginRequest("admin", "123456");
 
-        String response = mvc.perform( MockMvcRequestBuilders
+        mvc.perform( MockMvcRequestBuilders
                 .post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(csrf())
@@ -72,12 +57,6 @@ public class UserTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-
-        System.out.println();
+                .andExpect(status().isOk());
     }
 }

@@ -13,7 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CompoundSelection;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Root;
 import java.util.Collections;
+import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +28,11 @@ public class YearRepository {
     private final EntityManager entityManager;
     private final AssignmentMapper assignmentMapper;
     private final QueryService queryService;
+
+    private static final BiFunction<CriteriaBuilder, Root<YearEntity>, CompoundSelection<YearResponse>>
+        SELECT_YEAR_RESPONSE = (cb, from) -> cb.construct(YearResponse.class,
+            from.get(YearEntity_.YEAR_ID),
+            from.get(YearEntity_.TITLE));
 
     @Transactional
     public YearResponse create(YearDto yearDto) {
@@ -51,10 +61,7 @@ public class YearRepository {
 
     public Page<YearResponse> list(PageRequest pageable) {
         return queryService.pageQueryBuilder(YearEntity.class, YearResponse.class)
-                .select((cb, from) -> cb.construct(YearResponse.class,
-                        from.get(YearEntity_.YEAR_ID),
-                        from.get(YearEntity_.TITLE))
-                )
+                .select(SELECT_YEAR_RESPONSE)
                 .orderBy((cb, from) -> Collections.singletonList(cb.desc(from.get(YearEntity_.CREATED_AT))))
                 .build().getPage(pageable);
     }
@@ -62,5 +69,12 @@ public class YearRepository {
     public YearResponse get(Long id) {
         YearEntity year = entityManager.getReference(YearEntity.class, id);
         return assignmentMapper.mapYearToResponse(year);
+    }
+
+    public Optional<YearResponse> findYearByTitle(String title) {
+        return queryService.querybuilder(YearEntity.class, YearResponse.class)
+                .select(SELECT_YEAR_RESPONSE)
+                .where((cb, from) -> cb.equal(from.get(YearEntity_.TITLE), title))
+                .findSingleResult();
     }
 }
