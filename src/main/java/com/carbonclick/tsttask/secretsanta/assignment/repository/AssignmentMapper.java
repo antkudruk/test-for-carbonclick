@@ -10,6 +10,7 @@ public class AssignmentMapper {
         return YearResponse.builder()
                 .id(e.yearId())
                 .title(e.title())
+                .createdAt(e.createdAt())
                 .build();
     }
 }
