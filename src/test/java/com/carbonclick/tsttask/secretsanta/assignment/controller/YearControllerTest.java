@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -205,6 +206,71 @@ public class YearControllerTest {
         assertEquals("newAssignmentRequest", errorResponse.getFieldViolations().get(0).getObjectName());
         assertEquals("Year name should be unique", errorResponse.getFieldViolations().get(0).getMessage());
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void attemptToCreateAssignmentWithOneParticipant() throws Exception {
+        String body = objectMapper.writeValueAsString(
+                NewAssignmentRequest.builder()
+                        .title("Year 2020")
+                        .participants(createInitialParticipants(1))
+                        .build()
+        );
+
+        String result = mvc.perform( MockMvcRequestBuilders
+                .post("/year/generate")
+                .header("Authorization", "Bearer " + authToken)
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        ErrorResponse errorResponse = objectMapper.readValue(result, ErrorResponse.class);
+
+        assertEquals(1, errorResponse.getFieldViolations().size());
+        assertEquals("participants", errorResponse.getFieldViolations().get(0).getFieldName());
+        assertEquals("newAssignmentRequest", errorResponse.getFieldViolations().get(0).getObjectName());
+        assertEquals("Participants list should contain at least two participants",
+                errorResponse.getFieldViolations().get(0).getMessage());
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void attemptToCreateAssignmentWithEmptyParticipantList() throws Exception {
+        String body = objectMapper.writeValueAsString(
+                NewAssignmentRequest.builder()
+                        .title("Year 2020")
+                        .participants(Collections.emptySet())
+                        .build()
+        );
+
+        String result = mvc.perform( MockMvcRequestBuilders
+                .post("/year/generate")
+                .header("Authorization", "Bearer " + authToken)
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        ErrorResponse errorResponse = objectMapper.readValue(result, ErrorResponse.class);
+
+        assertEquals(1, errorResponse.getFieldViolations().size());
+        assertEquals("participants", errorResponse.getFieldViolations().get(0).getFieldName());
+        assertEquals("newAssignmentRequest", errorResponse.getFieldViolations().get(0).getObjectName());
+        assertEquals("Participants list should contain at least two participants",
+                errorResponse.getFieldViolations().get(0).getMessage());
+    }
+
 
     private <T> boolean allElementsDistinct(List<T> elements) {
         Set<T> found = new HashSet<>();
