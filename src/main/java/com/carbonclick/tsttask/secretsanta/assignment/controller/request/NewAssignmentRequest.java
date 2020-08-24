@@ -1,5 +1,7 @@
 package com.carbonclick.tsttask.secretsanta.assignment.controller.request;
 
+import com.carbonclick.tsttask.secretsanta.assignment.service.UniqueYearNameService;
+import com.carbonclick.tsttask.secretsanta.base.validation.ServiceValidation;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ApiModel(description = "Request to create and run new Secret Santa distribution")
+@ServiceValidation({UniqueYearNameService.class})
 public class NewAssignmentRequest {
     @ApiModelProperty("Title of the distribution (For instance, year number)")
     @NotBlank(message = "Year title should be specified")
