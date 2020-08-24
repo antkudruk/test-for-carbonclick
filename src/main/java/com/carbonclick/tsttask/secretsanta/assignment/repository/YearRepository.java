@@ -32,7 +32,8 @@ public class YearRepository {
     private static final BiFunction<CriteriaBuilder, Root<YearEntity>, CompoundSelection<YearResponse>>
         SELECT_YEAR_RESPONSE = (cb, from) -> cb.construct(YearResponse.class,
             from.get(YearEntity_.YEAR_ID),
-            from.get(YearEntity_.TITLE));
+            from.get(YearEntity_.TITLE),
+            from.get(YearEntity_.CREATED_AT));
 
     @Transactional
     public YearResponse create(YearDto yearDto) {
