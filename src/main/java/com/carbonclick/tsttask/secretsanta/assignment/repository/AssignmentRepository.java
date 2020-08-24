@@ -18,7 +18,7 @@ public class AssignmentRepository {
 
     private final QueryService queryService;
 
-    public Page<AssignmentResponse> list(long yearId, PageRequest pageable) {
+    public Page<AssignmentResponse> page(long yearId, PageRequest pageable) {
         return queryService.pageQueryBuilder(AssignmentEntity.class, AssignmentResponse.class)
                 .select((cb, from) -> cb.construct(AssignmentResponse.class,
                         from.get(AssignmentEntity_.ASSIGNMENT_ID),

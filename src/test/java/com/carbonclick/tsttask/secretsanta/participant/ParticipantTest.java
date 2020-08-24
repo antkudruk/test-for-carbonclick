@@ -1,6 +1,6 @@
 package com.carbonclick.tsttask.secretsanta.participant;
 
-import com.carbonclick.tsttask.secretsanta.assignment.controller.YearControllerTest;
+import com.carbonclick.tsttask.secretsanta.base.exceptionhandling.response.ErrorResponse;
 import com.carbonclick.tsttask.secretsanta.participant.controller.request.ParticipantRequest;
 import com.carbonclick.tsttask.secretsanta.participant.controller.response.ParticipantResponse;
 import com.carbonclick.tsttask.secretsanta.participant.repository.ParticipantRepository;
@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,6 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ParticipantTest {
+
+    private static final String FIRST_NAME = "John";
+    private static final String LAST_NAME = "Smith";
+    private static final String EMAIL = "user@host.dmn";
 
     @Autowired
     private MockMvc mvc;
@@ -83,9 +89,9 @@ public class ParticipantTest {
     public void listParticipantTest() throws Exception {
 
         participantRepository.save(ParticipantRequest.builder()
-                .firstName("John")
-                .lastName("Smith")
-                .email("user@host.dmn")
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .email(EMAIL)
                 .build());
 
         mvc.perform( MockMvcRequestBuilders
@@ -105,9 +111,9 @@ public class ParticipantTest {
     public void getParticipantTest() throws Exception {
 
         ParticipantResponse participant = participantRepository.save(ParticipantRequest.builder()
-                .firstName("John")
-                .lastName("Smith")
-                .email("user@host.dmn")
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .email(EMAIL)
                 .build());
 
         mvc.perform( MockMvcRequestBuilders
@@ -117,9 +123,9 @@ public class ParticipantTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value("John"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value("Smith"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("user@host.dmn"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value(FIRST_NAME))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value(LAST_NAME))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(EMAIL));
     }
 
     @Test
@@ -128,9 +134,9 @@ public class ParticipantTest {
     public void updateParticipantTest() throws Exception {
 
         ParticipantResponse participant = participantRepository.save(ParticipantRequest.builder()
-                .firstName("John")
-                .lastName("Smith")
-                .email("user@host.dmn")
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .email(EMAIL)
                 .build());
 
         String body = objectMapper.writeValueAsString(
@@ -161,9 +167,9 @@ public class ParticipantTest {
 
         String body = objectMapper.writeValueAsString(
                 ParticipantRequest.builder()
-                        .firstName("John")
-                        .lastName("Smith")
-                        .email("user@host.dmn")
+                        .firstName(FIRST_NAME)
+                        .lastName(LAST_NAME)
+                        .email(EMAIL)
                         .build()
         );
 
@@ -175,8 +181,95 @@ public class ParticipantTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value("John"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value("Smith"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("user@host.dmn"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value(FIRST_NAME))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value(LAST_NAME))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(EMAIL));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void tryCreateParticipantWithTheSameFullName() throws Exception {
+
+        participantRepository.save(ParticipantRequest.builder()
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .email(EMAIL)
+                .build());
+
+        String body = objectMapper.writeValueAsString(
+                ParticipantRequest.builder()
+                        .firstName(FIRST_NAME)
+                        .lastName(LAST_NAME)
+                        .email("another_email@host.dmn")
+                        .build()
+        );
+
+        String response = mvc.perform( MockMvcRequestBuilders
+                .post("/participant")
+                .header("Authorization", "Bearer " + authToken)
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        ErrorResponse errorResponse = objectMapper.readValue(response, ErrorResponse.class);
+
+        assertEquals(2, errorResponse.getFieldViolations().size());
+
+        assertTrue(errorResponse.getFieldViolations().stream().anyMatch(t ->
+                (t.getFieldName().equals("firstName"))
+                && (t.getMessage().equals("First and last name should be unique"))
+                && (t.getObjectName().equals("participantRequest"))));
+
+        assertTrue(errorResponse.getFieldViolations().stream().anyMatch(t ->
+                t.getFieldName().equals( "lastName")
+                && t.getMessage().equals("First and last name should be unique")
+                && t.getObjectName().equals("participantRequest")));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void tryCreateParticipantWithTheSameEmail() throws Exception {
+
+        participantRepository.save(ParticipantRequest.builder()
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .email(EMAIL)
+                .build());
+
+        String body = objectMapper.writeValueAsString(
+                ParticipantRequest.builder()
+                        .firstName("AnotherFirstName")
+                        .lastName(LAST_NAME)
+                        .email(EMAIL)
+                        .build()
+        );
+
+        String response = mvc.perform( MockMvcRequestBuilders
+                .post("/participant")
+                .header("Authorization", "Bearer " + authToken)
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        ErrorResponse errorResponse = objectMapper.readValue(response, ErrorResponse.class);
+
+        assertEquals(1, errorResponse.getFieldViolations().size());
+
+        assertTrue(errorResponse.getFieldViolations().stream().anyMatch(t ->
+                t.getFieldName().equals("email")
+                && t.getMessage().equals("Email should be unique")
+                && t.getObjectName().equals("participantRequest")));
     }
 }

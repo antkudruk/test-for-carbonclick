@@ -4,7 +4,7 @@ import com.carbonclick.tsttask.secretsanta.user.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,12 +14,12 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class TokenProvider {
 
     private final String SECRET = "SECRET";
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     public String createToken(String username) {
 

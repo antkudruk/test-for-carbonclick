@@ -90,6 +90,15 @@ public class QueryService {
             return this;
         }
 
+        public Optional<P> findSingleResult() {
+            List<P> list = build().getResultList();
+            if(list.size() == 0) {
+                return Optional.empty();
+            } else {
+                return Optional.of(list.get(0));
+            }
+        }
+
         public TypedQuery<P> build() {
             return entityManager.createQuery(query);
         }

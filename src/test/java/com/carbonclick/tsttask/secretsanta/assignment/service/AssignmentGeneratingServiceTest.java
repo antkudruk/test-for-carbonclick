@@ -1,8 +1,8 @@
 package com.carbonclick.tsttask.secretsanta.assignment.service;
 
 import com.carbonclick.tsttask.secretsanta.assignment.repository.dto.AssignmentDto;
+import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
